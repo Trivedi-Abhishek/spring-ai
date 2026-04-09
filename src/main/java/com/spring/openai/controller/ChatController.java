@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/api")
@@ -24,5 +25,15 @@ public class ChatController {
                 .system("Act like an IT team assistant and only answer questions related to IT stuff only") //-> if provided overrides default system
                 .user(message) //-> if provided overrides default system
                 .call().content();
+    }
+
+    @GetMapping("/chat-stream")
+    public Flux<String> chatStream(@RequestParam("message") String message) {
+//        return chatClient.prompt(message).call().content();
+
+        return chatClient.prompt()
+                .system("Act like an IT team assistant and only answer questions related to IT stuff only") //-> if provided overrides default system
+                .user(message) //-> if provided overrides default system
+                .stream().content();
     }
 }
