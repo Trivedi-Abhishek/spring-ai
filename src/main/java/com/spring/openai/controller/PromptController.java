@@ -1,6 +1,7 @@
 package com.spring.openai.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class PromptController {
     public ResponseEntity<String> emailPrompt(@RequestParam("customerName") String customerName,
                                               @RequestParam("customerMessage") String customerMessage) {
 
-        return ResponseEntity.ok(chatClient.prompt().system("You are IT team mail assistant respond to the queries, " +
+        return ResponseEntity.ok(chatClient.prompt().advisors(new SimpleLoggerAdvisor()).system("You are IT team mail assistant respond to the queries, " +
                 "only concerns related to IT support, by drafting a mail, only provide mail body.").user(promptTemplateSpec-> promptTemplateSpec.text(promptTemplate).param("customerName", customerName)
                 .param("customerMessage", customerMessage)).call().content());
     }

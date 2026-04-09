@@ -1,5 +1,6 @@
 package com.spring.openai.controller;
 
+import com.spring.openai.advisor.TokenUsageAuditAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -24,7 +25,7 @@ public class PromptStuffingController {
     @GetMapping("/prompt-stuffing")
     public String promptStuffing(@RequestParam("message") String message) {
 
-        return chatClient.prompt().system(promptStuffingTemplate).user(message).call().content();
+        return chatClient.prompt().advisors(new TokenUsageAuditAdvisor()).system(promptStuffingTemplate).user(message).call().content();
     }
 
 }
