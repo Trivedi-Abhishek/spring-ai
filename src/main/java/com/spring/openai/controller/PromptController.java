@@ -1,7 +1,10 @@
 package com.spring.openai.controller;
 
+import com.spring.openai.advisor.TokenUsageAuditAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -29,8 +34,11 @@ public class PromptController {
     public ResponseEntity<String> emailPrompt(@RequestParam("customerName") String customerName,
                                               @RequestParam("customerMessage") String customerMessage) {
 
-        return ResponseEntity.ok(chatClient.prompt().advisors(new SimpleLoggerAdvisor()).system("You are IT team mail assistant respond to the queries, " +
-                "only concerns related to IT support, by drafting a mail, only provide mail body.").user(promptTemplateSpec-> promptTemplateSpec.text(promptTemplate).param("customerName", customerName)
+        return ResponseEntity.ok(chatClient.prompt().advisors(List.of(new SimpleLoggerAdvisor(), new TokenUsageAuditAdvisor()))
+                .options(OpenAiChatOptions.builder().model(OpenAiApi.ChatModel.GPT_3_5_TURBO).build()).system("You are IT team mail assistant respond to the queries, " +
+                "only concerns related to IT support, by drafting a mail, only provide mail body.")
+                .user(promptTemplateSpec-> promptTemplateSpec.text(promptTemplate)
+                        .param("customerName", customerName)
                 .param("customerMessage", customerMessage)).call().content());
     }
 
