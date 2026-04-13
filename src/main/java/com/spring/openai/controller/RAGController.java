@@ -35,14 +35,15 @@ public class RAGController {
     public ResponseEntity<String> chatRag(@RequestHeader("username") String username,
                                           @RequestParam("message") String message) {
 
-        SearchRequest searchRequest = SearchRequest.builder().query(message).topK(3).similarityThreshold(0.5).build();
-        List<Document> documents = vectorStore.similaritySearch(searchRequest);
+//        SearchRequest searchRequest = SearchRequest.builder().query(message).topK(3).similarityThreshold(0.5).build();
+//        List<Document> documents = vectorStore.similaritySearch(searchRequest);
+//
+//        String similarContext = documents.stream().map(Document::getText).collect(Collectors.joining(System.lineSeparator()));
 
-        String similarContext = documents.stream().map(Document::getText).collect(Collectors.joining(System.lineSeparator()));
-
-        return ResponseEntity.ok(chatClient.prompt().system(promptSystemSpec -> {
-            promptSystemSpec.text(ragTemplate).param("document", similarContext);
-        }).advisors(advisorSpec -> {
+        return ResponseEntity.ok(chatClient.prompt()
+//                .system(promptSystemSpec -> {
+//            promptSystemSpec.text(ragTemplate).param("document", similarContext);})
+                .advisors(advisorSpec -> {
             advisorSpec.param(CONVERSATION_ID, username);
         }).user(message).call().content());
 
@@ -51,14 +52,15 @@ public class RAGController {
     @GetMapping("/document/chat")
     public ResponseEntity<String> chatDocumentRag(@RequestHeader("username") String username,
                                           @RequestParam("message") String message) {
-        SearchRequest searchRequest= SearchRequest.builder().query(message).topK(3).similarityThreshold(0.4).build();
-        List<Document> documentList = vectorStore.similaritySearch(searchRequest);
+//        SearchRequest searchRequest= SearchRequest.builder().query(message).topK(3).similarityThreshold(0.4).build();
+//        List<Document> documentList = vectorStore.similaritySearch(searchRequest);
+//
+//        String context = documentList.stream().map(Document::getText).collect(Collectors.joining(System.lineSeparator()));
 
-        String context = documentList.stream().map(Document::getText).collect(Collectors.joining(System.lineSeparator()));
-
-        return ResponseEntity.ok(chatClient.prompt().user(message).system(systemSpec -> {
-            systemSpec.text(ragTemplate).param("document", context);
-        }).advisors(advisorSpec -> {
+        return ResponseEntity.ok(chatClient.prompt().user(message)
+//                .system(systemSpec -> {
+//            systemSpec.text(ragTemplate).param("document", context);})
+                .advisors(advisorSpec -> {
             advisorSpec.param(CONVERSATION_ID, username);
         }).user(message).call().content());
     }
