@@ -31,7 +31,7 @@ public class HRDataLoader {
 //        vectorStore.add(documentList);
 
         //To reduce number of prompt tokens-> dividing large document into smaller chunks/docs
-        TextSplitter textSplitter = TokenTextSplitter.builder().withChunkSize(100).withMaxNumChunks(400).build();
+        TextSplitter textSplitter = TokenTextSplitter.builder().withChunkSize(200).withMaxNumChunks(400).build();
         vectorStore.add(textSplitter.split(documentList));
 
     }

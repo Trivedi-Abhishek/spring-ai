@@ -1,6 +1,7 @@
 package com.spring.openai.config;
 
 import com.spring.openai.advisor.TokenUsageAuditAdvisor;
+import com.spring.openai.rag.processor.PIIMaskingDocumentPostProcessor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -39,8 +40,9 @@ public class ChatMemoryChatClientConfig {
     @Bean
     public RetrievalAugmentationAdvisor retrievalAugmentationAdvisor(VectorStore vectorStore, ChatClient.Builder chatClientBuilder) {
         return RetrievalAugmentationAdvisor.builder()
-                .queryTransformers(TranslationQueryTransformer.builder().chatClientBuilder(chatClientBuilder.clone()).targetLanguage("english").build())
+                .queryTransformers(TranslationQueryTransformer.builder().chatClientBuilder(chatClientBuilder.clone()).targetLanguage("english").build()) //pre-retrieval
                 .documentRetriever(VectorStoreDocumentRetriever.builder().topK(3).similarityThreshold(0.5).vectorStore(vectorStore).build())
+                .documentPostProcessors(PIIMaskingDocumentPostProcessor.builder()) //post-retrieval
                 .build();
     }
 }
