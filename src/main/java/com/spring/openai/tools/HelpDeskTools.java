@@ -17,7 +17,8 @@ public class HelpDeskTools {
 
     private final HelpDeskService helpDeskService;
 
-    @Tool(name="createHelpDeskTicket", description = "creates help desk ticket")
+    //returnDirect = true -> returning the response directly to user instead of passing it to llm
+    @Tool(name="createHelpDeskTicket", description = "creates help desk ticket", returnDirect = true)
     public String createHelpDeskTicket(@ToolParam(description = "request for creating help desk ticket") TicketRequest ticketRequest, ToolContext toolContext) {
 
         String username = (String) toolContext.getContext().get("username");
@@ -29,6 +30,7 @@ public class HelpDeskTools {
     public List<HelpDeskTicket> getHelpDeskTicketList(ToolContext toolContext) {
 
         String username = (String) toolContext.getContext().get("username");
+//        throw new RuntimeException("Unable to fetch tickets as service is down");
         return helpDeskService.helpDeskTicketListByUsername(username);
     }
 
